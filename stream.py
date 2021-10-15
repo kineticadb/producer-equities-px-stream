@@ -11,6 +11,8 @@ import logging
 from datetime import timezone
 from time import strftime
 
+from recache import pull_quotes
+
 from kafka import KafkaProducer
 
 #######################################################################################
@@ -22,7 +24,6 @@ KAFKA_BRKR=os.getenv('KAFKA_HOST')
 KAFKA_PORT=os.getenv('KAFKA_PORT')
 KAFKA_TOPIC=os.getenv('KAFKA_TOPIC')
 
-SEED_FILE = "seed.csv"
 TIME_BETWEEN_LOOPS = 1
 
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.WARN)
@@ -36,11 +37,14 @@ producer = KafkaProducer(bootstrap_servers=[f"{KAFKA_BRKR}:{KAFKA_PORT}"],
 	sasl_plain_password = KAFKA_PASS,
 	security_protocol="SASL_SSL",
 	sasl_mechanism="PLAIN",
+	key_serializer=str.encode,
 	value_serializer=lambda x:
 	json.dumps(x).encode('utf-8'))
 logging.info('Connecting to Kafka, completed')
 
 px_initial = {}
+results_merged = pull_quotes()
+
 with open(SEED_FILE, "r", encoding='utf-8-sig') as my_file:
 	content = my_file.read()
 	quotes = content.split("\n")
