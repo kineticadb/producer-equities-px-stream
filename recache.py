@@ -4,7 +4,7 @@ import io
 import json
 import logging
 
-CACHE_FILE = "cache.csv"
+CACHE_FILE = "quote_cache.json"
 
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
